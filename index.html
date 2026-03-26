@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireKartIQ · TA Audit Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            color: #1a1f36;
+            line-height: 1.5;
+        }
+
+        .audit-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .audit-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .audit-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .audit-header p {
+            color: #6c757d;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            border: 1px solid #e9ecef;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #adb5bd;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0.25rem 0.5rem;
+            border-radius: 30px;
+        }
+
+        .step:hover {
+            background: #f0f2f5;
+        }
+
+        .step.active {
+            color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .step.completed {
+            color: #10b981;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .step.active .step-number {
+            background: #6366f1;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #10b981;
+            color: white;
+        }
+
+        /* Step Content */
+        .step-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+            background: #fafbfc;
+        }
+
+        .card-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-header p {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Pillar Cards */
+        .pillar-card {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .pillar-header {
+            padding: 1rem 1.5rem;
+            background: #fafbfc;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .pillar-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .pillar-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f2f5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .pillar-name {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .pillar-score {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #6366f1;
+        }
+
+        .pillar-score small {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: #6c757d;
+        }
+
+        .pillar-body {
+            padding: 1.5rem;
+        }
+
+        /* Metric Rows */
+        .metric-row {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .metric-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .metric-benchmark {
+            font-size: 0.7rem;
+            color: #6c757d;
+            background: #f0f2f5;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+        }
+
+        .rating-input {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+
+        .rating-slider {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #e2e8f0;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .rating-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #6366f1;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .rating-value {
+            font-weight: 700;
+            min-width: 35px;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .metric-notes {
+            margin-top: 0.5rem;
+        }
+
+        .metric-notes input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Score Bar */
+        .score-bar-container {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            border-color: #6366f1;
+            background: #f8f9fa;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        /* Report Sections */
+        .report-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .report-section:last-child {
+            border-bottom: none;
+        }
+
+        .report-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .generate-btn {
+            background: #f0f2f5;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .generate-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .ai-content {
+            background: #fafbfc;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .rating-badge {
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .rating-excellent { background: #d1fae5; color: #10b981; }
+        .rating-good { background: #c7d2fe; color: #6366f1; }
+        .rating-average { background: #fed7aa; color: #f59e0b; }
+        .rating-poor { background: #fee2e2; color: #ef4444; }
+        .rating-critical { background: #fecaca; color: #dc2626; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 3px solid #10b981;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+            font-size: 0.875rem;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .progress-steps {
+                flex-direction: column;
+                border-radius: 20px;
+            }
+            .audit-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="audit-container">
+        <div class="audit-header">
+            <h1>🔍 HireKartIQ TA Audit Tool</h1>
+            <p>Assess, score, and transform your talent acquisition function</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-steps" id="progressSteps"></div>
+
+        <!-- Step Containers -->
+        <div id="step1" class="step-content"></div>
+        <div id="step2" class="step-content"></div>
+        <div id="step3" class="step-content"></div>
+        <div id="step4" class="step-content"></div>
+        <div id="step5" class="step-content"></div>
+        <div id="step6" class="step-content"></div>
+        <div id="step7" class="step-content"></div>
+    </div>
+
+    <script>
+        // ==================== DATA STRUCTURE ====================
+        const pillars = {
+            strategy: {
+                name: "Strategy & Planning",
+                icon: "🎯",
+                metrics: [
+                    { name: "TA Strategy Alignment", benchmark: "TA strategy documented and aligned with business goals" },
+                    { name: "Workforce Planning", benchmark: "Proactive workforce planning (not reactive)" },
+                    { name: "Hiring Metrics Tracking", benchmark: "Metrics tracked and shared with leadership" },
+                    { name: "TA as Strategic Partner", benchmark: "TA seen as business partner, not order-taker" }
+                ],
+                scores: [0, 0, 0, 0],
+                notes: ["", "", "", ""]
+            },
+            process: {
+                name: "Process & Efficiency",
+                icon: "⚙️",
+                metrics: [
+                    { name: "Time-to-Hire", benchmark: "Under 45 days average" },
+                    { name: "Interview Process", benchmark: "3 rounds or fewer" },
+                    { name: "Feedback Turnaround", benchmark: "Within 24 hours" },
+                    { name: "Offer Acceptance Rate", benchmark: "Above 80%" }
+                ],
+                scores: [0, 0, 0, 0],
+                notes: ["", "", "", ""]
+            },
+            sourcing: {
+                name: "Sourcing & Talent Pipeline",
+                icon: "🔍",
+                metrics: [
+                    { name: "Agency Dependency", benchmark: "Less than 30% of hires" },
+                    { name: "Talent Pipelines", benchmark: "Active pipelines for critical roles" },
+                    { name: "Referral Program", benchmark: "30%+ of hires from referrals" },
+                    { name: "Sourcing Channel Mix", benchmark: "Multiple effective channels" }
+                ],
+                scores: [0, 0, 0, 0],
+                notes: ["", "", "", ""]
+            },
+            technology: {
+                name: "Technology & Tools",
+                icon: "💻",
+                metrics: [
+                    { name: "ATS Utilization", benchmark: "Fully utilized and optimized" },
+                    { name: "Data Dashboards", benchmark: "Leadership visibility through dashboards" },
+                    { name: "AI Adoption", benchmark: "AI tools used for screening/sourcing" },
+                    { name: "Candidate Experience", benchmark: "Tracked and measured" }
+                ],
+                scores: [0, 0, 0, 0],
+                notes: ["", "", "", ""]
+            },
+            brand: {
+                name: "Employer Brand & DEI",
+                icon: "🌟",
+                metrics: [
+                    { name: "Employer Value Proposition", benchmark: "Clear EVP defined and communicated" },
+                    { name: "Culture Visibility", benchmark: "Culture visible on careers page/social" },
+                    { name: "DEI Goals", benchmark: "Goals defined and tracked" },
+                    { name: "Diverse Slates", benchmark: "Diverse slates required for each role" }
+                ],
+                scores: [0, 0, 0, 0],
+                notes: ["", "", "", ""]
+            }
+        };
+
+        let currentStep = 1;
+        let clientData = {
+            company: "",
+            industry: "",
+            headcount: "",
+            city: "",
+            leader: "",
+            challenges: ""
+        };
+
+        // ==================== INITIALIZATION ====================
+        function init() {
+            renderProgressSteps();
+            renderStep1();
+            renderPillarStep(2, "strategy");
+            renderPillarStep(3, "process");
+            renderPillarStep(4, "sourcing");
+            renderPillarStep(5, "technology");
+            renderPillarStep(6, "brand");
+            renderStep7Placeholder();
+            showStep(1);
+        }
+
+        function renderProgressSteps() {
+            const steps = [
+                { num: 1, label: "Client Setup" },
+                { num: 2, label: "Strategy & Planning" },
+                { num: 3, label: "Process & Efficiency" },
+                { num: 4, label: "Sourcing & Pipeline" },
+                { num: 5, label: "Technology & Tools" },
+                { num: 6, label: "Employer Brand & DEI" },
+                { num: 7, label: "Audit Report" }
+            ];
+            
+            const container = document.getElementById("progressSteps");
+            container.innerHTML = steps.map(step => `
+                <div class="step ${currentStep === step.num ? 'active' : ''} ${currentStep > step.num ? 'completed' : ''}" 
+                     onclick="goToStep(${step.num})">
+                    <div class="step-number">${step.num}</div>
+                    <span>${step.label}</span>
+                </div>
+            `).join("");
+        }
+
+        function goToStep(step) {
+            if (step === 7 && !validateStep6Complete()) {
+                showToast("Please complete all previous steps first", "warning");
+                return;
+            }
+            currentStep = step;
+            renderProgressSteps();
+            showStep(step);
+            if (step === 7) {
+                generateFullReport();
+            }
+        }
+
+        function showStep(step) {
+            for (let i = 1; i <= 7; i++) {
+                const el = document.getElementById(`step${i}`);
+                if (el) {
+                    if (i === step) {
+                        el.classList.add("active");
+                    } else {
+                        el.classList.remove("active");
+                    }
+                }
+            }
+        }
+
+        function validateStep6Complete() {
+            // Check if client data is filled
+            const company = document.getElementById("companyName")?.value;
+            if (!company) return false;
+            return true;
+        }
+
+        // ==================== STEP 1: CLIENT SETUP ====================
+        function renderStep1() {
+            const container = document.getElementById("step1");
+            container.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📋 Client Information</h2>
+                        <p>Enter client details to personalize the audit report</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Company Name *</label>
+                                <input type="text" id="companyName" class="form-input" placeholder="e.g., Acme Corp" value="${clientData.company}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Industry</label>
+                                <input type="text" id="industry" class="form-input" placeholder="e.g., SaaS, Fintech, Healthcare" value="${clientData.industry}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Headcount</label>
+                                <input type="text" id="headcount" class="form-input" placeholder="e.g., 150 employees" value="${clientData.headcount}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">City / Location</label>
+                                <input type="text" id="city" class="form-input" placeholder="e.g., Bangalore, Hyderabad" value="${clientData.city}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">CHRO / TA Leader Name</label>
+                                <input type="text" id="leaderName" class="form-input" placeholder="e.g., Rajesh Sharma" value="${clientData.leader}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Client's Key Challenges</label>
+                                <textarea id="challenges" class="form-textarea" placeholder="e.g., High time-to-hire, agency dependency, difficulty finding niche talent...">${clientData.challenges}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" disabled style="visibility: hidden;">Previous</button>
+                    <button class="btn btn-primary" onclick="saveClientDataAndNext()">Next: Strategy & Planning →</button>
+                </div>
+            `;
+        }
+
+        function saveClientDataAndNext() {
+            clientData = {
+                company: document.getElementById("companyName")?.value || "",
+                industry: document.getElementById("industry")?.value || "",
+                headcount: document.getElementById("headcount")?.value || "",
+                city: document.getElementById("city")?.value || "",
+                leader: document.getElementById("leaderName")?.value || "",
+                challenges: document.getElementById("challenges")?.value || ""
+            };
+            
+            if (!clientData.company) {
+                showToast("Please enter company name", "warning");
+                return;
+            }
+            
+            goToStep(2);
+        }
+
+        // ==================== PILLAR STEPS ====================
+        function renderPillarStep(stepNum, pillarKey) {
+            const pillar = pillars[pillarKey];
+            const container = document.getElementById(`step${stepNum}`);
+            if (!container) return;
+            
+            let totalScore = pillar.scores.reduce((a, b) => a + b, 0);
+            let percentage = (totalScore / 20) * 100;
+            
+            let metricsHtml = '';
+            pillar.metrics.forEach((metric, idx) => {
+                metricsHtml += `
+                    <div class="metric-row">
+                        <div class="metric-header">
+                            <span class="metric-name">${metric.name}</span>
+                            <span class="metric-benchmark">📊 Benchmark: ${metric.benchmark}</span>
+                        </div>
+                        <div class="rating-input">
+                            <span style="font-size:0.7rem;">0</span>
+                            <input type="range" class="rating-slider" min="0" max="5" step="1" value="${pillar.scores[idx]}" 
+                                   onchange="updatePillarScore('${pillarKey}', ${idx}, this.value)">
+                            <span class="rating-value" id="${pillarKey}_score_${idx}">${pillar.scores[idx]}</span>
+                            <span style="font-size:0.7rem;">5</span>
+                        </div>
+                        <div class="metric-notes">
+                            <input type="text" placeholder="Add observations / notes..." value="${pillar.notes[idx]}" 
+                                   onchange="updatePillarNote('${pillarKey}', ${idx}, this.value)">
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <h2>${pillar.icon} ${pillar.name}</h2>
+                                <p>Score each metric 0-5 based on current maturity</p>
+                            </div>
+                            <div class="pillar-score" id="${pillarKey}_total">${totalScore}<small>/20</small></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="score-bar-container">
+                            <div class="score-bar-fill" id="${pillarKey}_bar" style="width: ${percentage}%"></div>
+                        </div>
+                        ${metricsHtml}
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="goToStep(${stepNum - 1})">← Previous</button>
+                    <button class="btn btn-primary" onclick="goToStep(${stepNum + 1})">Next →</button>
+                </div>
+            `;
+        }
+
+        function updatePillarScore(pillarKey, metricIdx, value) {
+            pillars[pillarKey].scores[metricIdx] = parseInt(value);
+            document.getElementById(`${pillarKey}_score_${metricIdx}`).innerText = value;
+            
+            let totalScore = pillars[pillarKey].scores.reduce((a, b) => a + b, 0);
+            let percentage = (totalScore / 20) * 100;
+            document.getElementById(`${pillarKey}_total`).innerHTML = `${totalScore}<small>/20</small>`;
+            const barEl = document.getElementById(`${pillarKey}_bar`);
+            if (barEl) barEl.style.width = `${percentage}%`;
+        }
+
+        function updatePillarNote(pillarKey, metricIdx, value) {
+            pillars[pillarKey].notes[metricIdx] = value;
+        }
+
+        // ==================== STEP 7: REPORT ====================
+        function renderStep7Placeholder() {
+            const container = document.getElementById("step7");
+            container.innerHTML = `<div class="card"><div class="card-body"><p style="text-align: center; padding: 3rem;">Complete all steps and click "Audit Report" to view the full report →</p></div></div>`;
+        }
+
+        function generateFullReport() {
+            // Save client data
+            clientData.company = document.getElementById("companyName")?.value || clientData.company;
+            clientData.industry = document.getElementById("industry")?.value || clientData.industry;
+            clientData.headcount = document.getElementById("headcount")?.value || clientData.headcount;
+            clientData.city = document.getElementById("city")?.value || clientData.city;
+            clientData.leader = document.getElementById("leaderName")?.value || clientData.leader;
+            clientData.challenges = document.getElementById("challenges")?.value || clientData.challenges;
+            
+            // Calculate scores
+            let totalScore = 0;
+            let maxTotal = 100;
+            let pillarScores = {};
+            
+            for (let [key, pillar] of Object.entries(pillars)) {
+                let score = pillar.scores.reduce((a, b) => a + b, 0);
+                pillarScores[key] = { 
+                    score, 
+                    max: 20, 
+                    percentage: (score / 20) * 100, 
+                    name: pillar.name,
+                    notes: pillar.notes
+                };
+                totalScore += score;
+            }
+            
+            let overallPercentage = (totalScore / maxTotal) * 100;
+            let rating = getRating(overallPercentage);
+            
+            const container = document.getElementById("step7");
+            container.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📊 TA Audit Report</h2>
+                        <p>Generated for ${clientData.company || "Client"} | ${clientData.industry || "Not specified"}</p>
+                    </div>
+                    <div class="card-body">
+                        <!-- Score Summary -->
+                        <div class="report-section">
+                            <h3>Overall TA Maturity Score</h3>
+                            <div style="text-align: center; padding: 1.5rem;">
+                                <div style="font-size: 3rem; font-weight: 800; color: #6366f1;">${Math.round(overallPercentage)}%</div>
+                                <div><span class="rating-badge rating-${rating.class}">${rating.label}</span></div>
+                                <div class="score-bar-container" style="margin-top: 1rem;">
+                                    <div class="score-bar-fill" style="width: ${overallPercentage}%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pillar Breakdown -->
+                        <div class="report-section">
+                            <h3>Pillar Score Breakdown</h3>
+                            ${Object.entries(pillarScores).map(([key, p]) => `
+                                <div style="margin-bottom: 1rem;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                        <span><strong>${p.name}</strong></span>
+                                        <span>${Math.round(p.percentage)}% (${p.score}/20)</span>
+                                    </div>
+                                    <div class="score-bar-container">
+                                        <div class="score-bar-fill" style="width: ${p.percentage}%;"></div>
+                                    </div>
+                                    ${p.notes.some(n => n) ? `<div style="font-size: 0.7rem; color: #6c757d; margin-top: 0.25rem;">📝 ${p.notes.filter(n => n).join("; ")}</div>` : ""}
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <!-- AI-Generated Sections -->
+                        <div class="report-section">
+                            <h3>📝 Executive Summary 
+                                <button class="generate-btn" onclick="generateExecutiveSummary()">✨ Generate</button>
+                            </h3>
+                            <div id="executiveSummary" class="ai-content" style="min-height: 100px;">
+                                Click "Generate" to create an AI-powered executive summary
+                            </div>
+                        </div>
+                        
+                        <div class="report-section">
+                            <h3>🗓️ 90-Day Transformation Roadmap
+                                <button class="generate-btn" onclick="generateRoadmap()">✨ Generate</button>
+                            </h3>
+                            <div id="roadmap" class="ai-content" style="min-height: 100px;">
+                                Click "Generate" to create a customized action plan
+                            </div>
+                        </div>
+                        
+                        <div class="report-section">
+                            <h3>💼 Retainer Pitch
+                                <button class="generate-btn" onclick="generatePitch()">✨ Generate</button>
+                            </h3>
+                            <div id="pitch" class="ai-content" style="min-height: 100px;">
+                                Click "Generate" to create a personalized engagement pitch
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-secondary" onclick="copyScoreData()">📋 Copy Score Data</button>
+                            <button class="btn btn-secondary" onclick="goToStep(1)">✏️ Edit Audit</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getRating(percentage) {
+            if (percentage >= 80) return { label: 'Excellent', class: 'excellent' };
+            if (percentage >= 65) return { label: 'Good', class: 'good' };
+            if (percentage >= 45) return { label: 'Average', class: 'average' };
+            if (percentage >= 25) return { label: 'Poor', class: 'poor' };
+            return { label: 'Critical', class: 'critical' };
+        }
+
+        function getClientDataForReport() {
+            return {
+                company: clientData.company || "Client Company",
+                industry: clientData.industry || "Not specified",
+                headcount: clientData.headcount || "Not specified",
+                city: clientData.city || "Not specified",
+                leader: clientData.leader || "TA Leader",
+                challenges: clientData.challenges || "No specific challenges noted"
+            };
+        }
+
+        function getPillarScoresForReport() {
+            let scores = {};
+            let total = 0;
+            let highest = { name: '', percentage: 0 };
+            let lowest = { name: '', percentage: 100 };
+            
+            for (let [key, pillar] of Object.entries(pillars)) {
+                let score = pillar.scores.reduce((a, b) => a + b, 0);
+                let percentage = (score / 20) * 100;
+                scores[key] = { score, percentage, name: pillar.name };
+                total += score;
+                
+                if (percentage > highest.percentage) {
+                    highest = { name: pillar.name, percentage };
+                }
+                if (percentage < lowest.percentage) {
+                    lowest = { name: pillar.name, percentage };
+                }
+            }
+            
+            return { total: (total / 100) * 100, highest, lowest, scores };
+        }
+
+        function getTopRecommendation() {
+            const scores = getPillarScoresForReport();
+            const lowest = scores.lowest.name;
+            
+            const recommendations = {
+                "Strategy & Planning": "developing a documented TA strategy aligned with business goals",
+                "Process & Efficiency": "streamlining interview processes and reducing time-to-hire",
+                "Sourcing & Talent Pipeline": "building internal sourcing capabilities and reducing agency dependency",
+                "Technology & Tools": "implementing AI-powered screening and leadership dashboards",
+                "Employer Brand & DEI": "defining a clear EVP and embedding DEI into hiring processes"
+            };
+            
+            return recommendations[lowest] || "focused investment in the identified priority areas";
+        }
+
+        function getMetricRecommendation(pillarName) {
+            const recommendations = {
+                "Strategy & Planning": "quarterly workforce planning sessions with business leaders",
+                "Process & Efficiency": "24-hour feedback SLAs and streamlined interview processes",
+                "Sourcing & Talent Pipeline": "enhanced referral program and passive talent outreach",
+                "Technology & Tools": "ATS optimization and AI screening tools",
+                "Employer Brand & DEI": "EVP definition and diverse slate requirements"
+            };
+            return recommendations[pillarName] || "targeted improvements in key metrics";
+        }
+
+        // ==================== AI GENERATION FUNCTIONS ====================
+        function generateExecutiveSummary() {
+            const client = getClientDataForReport();
+            const scores = getPillarScoresForReport();
+            const rating = getRating(scores.total);
+            const topRec = getTopRecommendation();
+            
+            const summary = `${client.company} is a ${client.industry} company with ${client.headcount} employees, currently operating with a TA maturity score of ${Math.round(scores.total)}% (${rating.label}). 
+
+The audit reveals that the organization's strongest pillar is ${scores.highest.name} (${Math.round(scores.highest.percentage)}%), while the greatest opportunity lies in ${scores.lowest.name} (${Math.round(scores.lowest.percentage)}%). 
+
+Key challenges identified include: ${client.challenges || "Limited visibility into TA operations"}. Based on the assessment, the TA function would benefit most from ${topRec}. With focused investment in these areas, ${client.company} can reduce time-to-hire by 25%, cut agency dependency by 40%, and increase delivery capacity by 4x within 12 months.`;
+            
+            document.getElementById('executiveSummary').innerHTML = summary.replace(/\n/g, '<br>');
+            showToast('Executive summary generated!');
+        }
+
+        function generateRoadmap() {
+            const client = getClientDataForReport();
+            const scores = getPillarScoresForReport();
+            const lowest = scores.lowest;
+            const metricRec = getMetricRecommendation(lowest.name);
+            
+            const roadmap = `**90-Day Transformation Roadmap for ${client.company}**
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 **Days 1-30: Foundation & Quick Wins**
+• Focus on ${lowest.name} (current score: ${Math.round(lowest.percentage)}%)
+• Implement ${metricRec}
+• Set up basic dashboards for leadership visibility
+• Launch enhanced referral program with clear incentives
+• Complete TA function audit and baseline metrics
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 **Days 31-60: Process Optimization**
+• Streamline interview process to 3 rounds max
+• Implement 24-hour feedback SLAs
+• Reduce agency dependency by 20%
+• Begin building talent pipelines for critical roles
+• Deploy ATS optimization and workflow automation
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 **Days 61-90: Strategic Impact**
+• Deploy AI screening tools for high-volume roles
+• Launch employer branding initiatives
+• Achieve 25% reduction in time-to-hire
+• Deliver first quarterly workforce planning session with leadership
+• Present transformation results and next-phase recommendations
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 **Expected Outcomes:**
+• 4x increase in delivery capacity
+• ₹2-3Cr+ annual cost savings from reduced agency spend
+• 30% improvement in offer acceptance rate
+• TA recognized as strategic business partner
+• Time-to-hire reduced from 45-60 days to under 35 days`;
+            
+            document.getElementById('roadmap').innerHTML = roadmap.replace(/\n/g, '<br>');
+            showToast('90-day roadmap generated!');
+        }
+
+        function generatePitch() {
+            const client = getClientDataForReport();
+            const scores = getPillarScoresForReport();
+            const rating = getRating(scores.total);
+            const lowest = scores.lowest;
+            
+            const pitch = `**Subject: Transforming TA at ${client.company} — A Strategic Partnership**
+
+Hi ${client.leader},
+
+Following our TA audit, I wanted to share how HireKartIQ can help ${client.company} achieve the outcomes we discussed.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 **Current State:**
+Your TA function scored ${Math.round(scores.total)}% (${rating.label}), with the biggest opportunity in ${lowest.name} (${Math.round(lowest.percentage)}%).
+
+${client.challenges ? `Key challenges identified: ${client.challenges}` : "Opportunities exist across process efficiency and sourcing strategy."}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 **What We Can Achieve Together:**
+
+**Phase 1: Quick Wins (Month 1)**
+• Reduce time-to-hire by 25%
+• Cut agency dependency by 40%
+• Implement real-time hiring dashboards
+• Launch enhanced referral program
+
+**Phase 2: Strategic Transformation (Months 2-3)**
+• Build talent pipelines for critical roles
+• Launch AI-powered screening
+• Embed DEI into hiring processes
+• Train hiring managers on structured interviewing
+
+**Phase 3: Scale & Optimize (Months 4-6)**
+• 4x delivery capacity increase
+• ₹2-3Cr+ annual cost savings
+• TA as recognized business partner
+• Predictive workforce planning capability
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💰 **Investment:**
+Monthly retainer: ₹75,000-1,50,000 depending on scope
+(Includes weekly strategy sessions, dashboard access, and unlimited TA advisory support)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Next Step:** Let's schedule a 30-minute call to walk through the detailed roadmap and answer any questions.
+
+Would Thursday or Friday work for you?
+
+Best,
+Krishna Pavan
+HireKartIQ
++91-8074744268
+krishnaakp@gmail.com`;
+            
+            document.getElementById('pitch').innerHTML = pitch.replace(/\n/g, '<br>');
+            showToast('Retainer pitch generated!');
+        }
+
+        function copyScoreData() {
+            const client = getClientDataForReport();
+            const scores = getPillarScoresForReport();
+            
+            let text = `═══════════════════════════════════════\n`;
+            text += `HireKartIQ TA Audit Report\n`;
+            text += `═══════════════════════════════════════\n\n`;
+            text += `Client: ${client.company}\n`;
+            text += `Industry: ${client.industry}\n`;
+            text += `Headcount: ${client.headcount}\n`;
+            text += `Location: ${client.city}\n`;
+            text += `TA Leader: ${client.leader}\n\n`;
+            text += `Overall Score: ${Math.round(scores.total)}%\n`;
+            text += `Rating: ${getRating(scores.total).label}\n\n`;
+            text += `Pillar Scores:\n`;
+            text += `────────────────────────────────────────\n`;
+            for (let [key, data] of Object.entries(scores.scores)) {
+                const pillar = pillars[key];
+                text += `• ${data.name}: ${Math.round(data.percentage)}% (${data.score}/20)\n`;
+                if (pillar.notes.some(n => n)) {
+                    text += `  Notes: ${pillar.notes.filter(n => n).join("; ")}\n`;
+                }
+            }
+            text += `\nKey Challenges: ${client.challenges || "Not specified"}\n`;
+            
+            navigator.clipboard.writeText(text);
+            showToast('Score data copied to clipboard!');
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}" style="margin-right: 0.5rem; color: ${type === 'success' ? '#10b981' : '#f59e0b'};"></i>${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Make functions globally accessible
+        window.goToStep = goToStep;
+        window.updatePillarScore = updatePillarScore;
+        window.updatePillarNote = updatePillarNote;
+        window.saveClientDataAndNext = saveClientDataAndNext;
+        window.generateExecutiveSummary = generateExecutiveSummary;
+        window.generateRoadmap = generateRoadmap;
+        window.generatePitch = generatePitch;
+        window.copyScoreData = copyScoreData;
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>
